@@ -23,7 +23,7 @@
       </div>
 
       <form id="photoForm" style="display:none;">
-        <input type="text" id="placeInput" placeholder="📍 Lugar (ej: Plaza)" />
+        <input type="text" id="placeInput" placeholder="📍 Lugar" />
         <input type="file" id="photoInput" accept="image/*" />
         <button type="submit">Subir foto</button>
       </form>
@@ -33,156 +33,8 @@
   </div>
 
   <footer>Hecho con 💛</footer>
-<style>
-  /* Palette: #e77d00 (accent) / #fff7db (bg) */
-body {
-  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: #fff7db;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-}
 
-.ticket {
-  background: #fff7db;
-  border: 2px dashed #e77d00;
-  border-radius: 20px;
-  margin: 2rem 1rem;
-  padding: 2rem;
-  width: 100%;
-  max-width: 520px;
-  box-shadow: 0 6px 12px rgba(231,125,0,0.18);
-  box-sizing: border-box;
-  position: relative;
-}
-
-/* decorative circles like ticket */
-.ticket::before,
-.ticket::after {
-  content: "";
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: #fff7db;
-  border: 2px solid #e77d00;
-  border-radius: 50%;
-}
-.ticket::before { top: -12px; left: 50%; transform: translateX(-50%); }
-.ticket::after  { bottom: -12px; left: 50%; transform: translateX(-50%); }
-
-.ticket-content { text-align: center; color: #8b4b00; }
-h1 { color: #e77d00; margin: 0 0 .25rem 0; font-size: 1.7rem; }
-.subtitle { color: #a96c00; margin-bottom: 1rem; font-style: italic; }
-
-/* auth row - ghost buttons (no solid fill) */
-#auth-row { display:flex; gap: 0.6rem; justify-content:center; margin-bottom: 1rem; flex-wrap:wrap; }
-button.ghost {
-  background: transparent;
-  border: 2px solid #e77d00;
-  color: #e77d00;
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-}
-button.ghost:hover { background: rgba(231,125,0,0.06); }
-
-/* user area */
-#user-area { display:flex; gap:0.6rem; justify-content:center; align-items:center; margin-bottom:1rem; }
-button.small {
-  background: #e77d00;
-  border: none;
-  color: #fff7db;
-  padding: 0.45rem 0.75rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* form fields - wider, close to orange border visually via width */
-form#photoForm {
-  display:flex;
-  flex-direction:column;
-  gap:0.8rem;
-  align-items:center;
-  margin-bottom: 1.2rem;
-  width:100%;
-  box-sizing:border-box;
-}
-#placeInput, #photoInput, form#photoForm button {
-  width: 94%;
-  max-width: 480px;
-  box-sizing: border-box;
-  border-radius: 12px;
-  padding: 0.9rem;
-  border: 2px solid #e77d00;
-  outline: none;
-  font-size: 1rem;
-  background: #fffef7;
-  color: #703f00;
-}
-
-/* file input appearance: keep native but roomy */
-#photoInput { padding: 0.5rem; }
-
-/* submit button solid */
-form#photoForm button {
-  background: #e77d00;
-  color: #fff7db;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-}
-form#photoForm button:hover { background:#cc6f00; }
-
-/* gallery */
-#gallery {
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.9rem;
-  margin-top: 1rem;
-}
-
-/* normal photo card (with gentle card look) */
-.photo-card {
-  background: #fffef6;
-  border: 1px solid #f0b86e;
-  border-radius: 12px;
-  padding: 0.45rem;
-  box-shadow: 0 3px 6px rgba(231,125,0,0.12);
-  box-sizing: border-box;
-  overflow: hidden;
-}
-.photo-card img { width:100%; height: auto; display:block; border-radius:8px; }
-
-/* FIRST photo: no card fill, full-bleed photo */
-.photo-card.first {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-}
-.photo-card.first img { border-radius: 12px; }
-
-/* caption */
-.caption { font-size: 0.9rem; color: #8b4b00; margin-top: 0.4rem; }
-
-/* footer */
-footer { text-align:center; color:#a96c00; margin: 1.2rem 0; font-size:0.85rem; }
-
-/* responsive tweaks */
-@media (max-width: 520px) {
-  .ticket { padding: 1.2rem; margin: 1rem; width: 96%; }
-  h1 { font-size: 1.4rem; }
-  #placeInput, #photoInput, form#photoForm button { width: 96%; padding: 0.8rem; }
-  #auth-row { gap:0.4rem; }
-}
-
-</style>
-  <script type="module" src="app.js">
-
-  </script>
+  <!-- Script modular -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
