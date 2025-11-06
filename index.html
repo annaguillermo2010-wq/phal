@@ -3,59 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📸 Muro Compartido</title>
+  <title>📸 Photo Album — Por cada momento, una foto</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>📸 Muro Compartido</h1>
+  <div class="ticket">
+    <div class="ticket-content">
+      <h1>📸 Photo Album</h1>
+      <p class="subtitle">Por cada momento, una foto</p>
 
-  <form id="uploadForm">
-    <input type="file" id="photoInput" accept="image/*" required />
-    <input type="text" id="locationInput" placeholder="Lugar" required />
-    <button type="submit">Subir foto</button>
-  </form>
+      <form id="uploadForm">
+        <label for="photoInput" class="custom-file">
+          📷 Elegí una foto
+          <input type="file" id="photoInput" accept="image/*" required hidden />
+        </label>
+        <input type="text" id="locationInput" placeholder="📍 Lugar" required />
+        <button type="submit">💛 Subir foto</button>
+      </form>
 
-  <div id="gallery"></div>
+      <div id="gallery"></div>
+    </div>
+  </div>
+
+  <footer>
+    Hecho con 💛 
+  </footer>
 <style>
   body {
-  font-family: system-ui, sans-serif;
-  background: #f8f8f8;
-  padding: 1rem;
+  font-family: "Poppins", sans-serif;
+  background: #fff8ec;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ticket {
+  background: #fff1d6;
+  border: 2px dashed #f59b42;
+  border-radius: 20px;
+  margin-top: 2rem;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.ticket-content {
   text-align: center;
+  color: #8b4513;
 }
 
 h1 {
-  color: #333;
+  color: #ff8c42;
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.subtitle {
+  color: #b46a1c;
+  font-style: italic;
+  margin-bottom: 1.5rem;
 }
 
 form {
-  background: white;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
   margin-bottom: 2rem;
 }
 
-input, button {
-  margin: 0.5rem;
-  padding: 0.5rem;
+.custom-file {
+  background: #ffd8a9;
+  color: #7a4a00;
+  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  border: 1px solid #f59b42;
+  transition: all 0.3s ease;
+}
+
+.custom-file:hover {
+  background: #ffcd85;
+}
+
+input[type="text"], button {
+  border: 1px solid #f59b42;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
   font-size: 1rem;
+  outline: none;
+}
+
+input[type="text"] {
+  background: #fff9f1;
+  color: #7a4a00;
+}
+
+button {
+  background: #ffb860;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #ffa94d;
 }
 
 #gallery {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
 }
 
 .photo-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  background: #fff9ef;
+  border: 1px solid #f6b65a;
+  border-radius: 12px;
   padding: 0.5rem;
-  width: 200px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 .photo-card img {
@@ -64,8 +134,14 @@ input, button {
 }
 
 .photo-card p {
-  font-size: 0.9rem;
-  color: #555;
+  font-size: 0.85rem;
+  color: #7a4a00;
+}
+
+footer {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #b46a1c;
 }
 
 </style>
@@ -75,7 +151,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebas
 import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
-// 🔥 Tu configuración de Firebase
+// Tu configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDD81maTjt_uUtNhOR4mvjhF0_vQYwqeic",
   authDomain: "phal-88bd8.firebaseapp.com",
@@ -91,7 +167,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// 🖼️ Subir foto
+// Subir foto
 const form = document.getElementById("uploadForm");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -99,31 +175,29 @@ form.addEventListener("submit", async (e) => {
   const file = document.getElementById("photoInput").files[0];
   const location = document.getElementById("locationInput").value;
 
-  if (!file) return alert("Seleccioná una foto");
+  if (!file) return alert("Seleccioná una foto 💛");
 
   try {
-    // Subir imagen a Storage
     const fileRef = ref(storage, `fotos/${Date.now()}_${file.name}`);
     await uploadBytes(fileRef, file);
     const url = await getDownloadURL(fileRef);
 
-    // Guardar datos en Firestore
     await addDoc(collection(db, "fotos"), {
       url: url,
       lugar: location,
       fecha: serverTimestamp()
     });
 
-    alert("✅ Foto subida correctamente");
+    alert("💛 Foto subida con éxito");
     form.reset();
     mostrarFotos();
   } catch (error) {
     console.error("Error al subir:", error);
-    alert("❌ Error al subir la foto");
+    alert("❌ Hubo un error al subir la foto");
   }
 });
 
-// 📸 Mostrar fotos
+// Mostrar fotos
 async function mostrarFotos() {
   const gallery = document.getElementById("gallery");
   gallery.innerHTML = "";
