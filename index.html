@@ -29,9 +29,9 @@
     Hecho con 💛 
   </footer>
 <style>
-  body {
+ body {
   font-family: "Poppins", sans-serif;
-  background: #fff8ec;
+  background: #fff7db;
   margin: 0;
   padding: 0;
   display: flex;
@@ -40,29 +40,55 @@
 }
 
 .ticket {
-  background: #fff1d6;
-  border: 2px dashed #f59b42;
+  background: #fff7db;
+  border: 2px dashed #e77d00;
   border-radius: 20px;
   margin-top: 2rem;
   padding: 2rem;
   width: 90%;
-  max-width: 500px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  max-width: 480px;
+  box-shadow: 0 4px 8px rgba(231, 125, 0, 0.2);
+  position: relative;
+}
+
+/* Bordes decorativos tipo ticket */
+.ticket::before,
+.ticket::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #fff7db;
+  border: 2px solid #e77d00;
+  border-radius: 50%;
+}
+
+.ticket::before {
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ticket::after {
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .ticket-content {
   text-align: center;
-  color: #8b4513;
+  color: #8b4b00;
 }
 
 h1 {
-  color: #ff8c42;
+  color: #e77d00;
   font-size: 1.8rem;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.5px;
 }
 
 .subtitle {
-  color: #b46a1c;
+  color: #a96c00;
   font-style: italic;
   margin-bottom: 1.5rem;
 }
@@ -71,26 +97,26 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.7rem;
   margin-bottom: 2rem;
 }
 
 .custom-file {
-  background: #ffd8a9;
-  color: #7a4a00;
+  background: #e77d00;
+  color: #fff7db;
   border-radius: 12px;
-  padding: 0.7rem 1.2rem;
+  padding: 0.8rem 1.2rem;
   cursor: pointer;
-  border: 1px solid #f59b42;
+  border: none;
   transition: all 0.3s ease;
 }
 
 .custom-file:hover {
-  background: #ffcd85;
+  background: #cc6f00;
 }
 
 input[type="text"], button {
-  border: 1px solid #f59b42;
+  border: 1px solid #e77d00;
   border-radius: 10px;
   padding: 0.6rem 1rem;
   font-size: 1rem;
@@ -98,20 +124,20 @@ input[type="text"], button {
 }
 
 input[type="text"] {
-  background: #fff9f1;
-  color: #7a4a00;
+  background: #fffef7;
+  color: #703f00;
 }
 
 button {
-  background: #ffb860;
-  color: #fff;
+  background: #e77d00;
+  color: #fff7db;
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
 }
 
 button:hover {
-  background: #ffa94d;
+  background: #cc6f00;
 }
 
 #gallery {
@@ -121,11 +147,11 @@ button:hover {
 }
 
 .photo-card {
-  background: #fff9ef;
-  border: 1px solid #f6b65a;
+  background: #fffef6;
+  border: 1px solid #f0b86e;
   border-radius: 12px;
   padding: 0.5rem;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 6px rgba(231, 125, 0, 0.15);
 }
 
 .photo-card img {
@@ -135,13 +161,13 @@ button:hover {
 
 .photo-card p {
   font-size: 0.85rem;
-  color: #7a4a00;
+  color: #8b4b00;
 }
 
 footer {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   font-size: 0.8rem;
-  color: #b46a1c;
+  color: #a96c00;
 }
 
 </style>
