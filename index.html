@@ -1,40 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>📸 Mis recuerdos</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📸 Album Compartido</title>
+<style>
+  body { font-family: sans-serif; background:#fff7db; text-align:center; }
+  #gallery { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin:20px; }
+  .photo-card img { width:100%; border-radius:8px; }
+</style>
 </head>
 <body>
-  <div class="ticket">
-    <div class="ticket-content">
-      <h1>📸 Mis recuerdos</h1>
-      <p class="subtitle">Guardá tus fotos y lugares</p>
+<h1>📸 Album Compartido</h1>
+<div id="gallery"></div>
 
-      <div id="auth-row">
-        <button id="loginBtn" class="ghost">Iniciar sesión</button>
-        <button id="registerBtn" class="ghost">Registrarme</button>
-      </div>
+<script>
+  // Aquí pegás la función
+  async function loadPhotos() {
+    const res = await fetch('photos.json');
+    const photos = await res.json();
+    const gallery = document.getElementById('gallery');
+    gallery.innerHTML = '';
 
-      <div id="user-area" style="display:none;">
-        <p id="welcome"></p>
-        <button id="logoutBtn" class="small">Cerrar sesión</button>
-      </div>
+    if(photos.length === 0){
+      gallery.innerHTML = "<p>No hay fotos aún.</p>";
+      return;
+    }
 
-      <form id="photoForm" style="display:none;">
-        <input type="text" id="placeInput" placeholder="📍 Lugar" />
-        <input type="file" id="photoInput" accept="image/*" />
-        <button type="submit">Subir foto</button>
-      </form>
+    photos.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.innerHTML = `<img src="${p.url}" alt="${p.place}"><div>${p.place}</div>`;
+      gallery.appendChild(card);
+    });
+  }
 
-      <div id="gallery"></div>
-    </div>
-  </div>
-
-  <footer>Hecho con 💛</footer>
-
-  <!-- Script modular -->
-  <script type="module" src="app.js"></script>
+  // Llamás a la función para que cargue las fotos cuando se abra la página
+  loadPhotos();
+</script>
 </body>
 </html>
