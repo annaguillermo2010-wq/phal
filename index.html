@@ -1,102 +1,147 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📸 Galería Compartida</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📸 Muro Compartido</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>📍 Galería Compartida</h1>
+  <h1>📸 Muro Compartido</h1>
 
   <form id="uploadForm">
-    <input type="file" id="photo" accept="image/*" required>
-    <input type="text" id="place" placeholder="Lugar..." required>
+    <input type="file" id="photoInput" accept="image/*" required />
+    <input type="text" id="locationInput" placeholder="Lugar" required />
     <button type="submit">Subir foto</button>
   </form>
 
   <div id="gallery"></div>
-
-  <style>
-    body {
+<style>
+  body {
   font-family: system-ui, sans-serif;
-  background: #fafafa;
+  background: #f8f8f8;
+  padding: 1rem;
   text-align: center;
-  margin: 20px;
 }
+
+h1 {
+  color: #333;
+}
+
 form {
-  margin-bottom: 20px;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  display: inline-block;
+  margin-bottom: 2rem;
 }
+
+input, button {
+  margin: 0.5rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
 #gallery {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 1rem;
 }
-img {
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
+
+.photo-card {
+  background: white;
   border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  padding: 0.5rem;
+  width: 200px;
 }
 
-  </style>
-  <script type="module" src="script.js">
-    // Importar Firebase SDK (usando módulos)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
-import { getFirestore, collection, addDoc, getDocs, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+.photo-card img {
+  width: 100%;
+  border-radius: 8px;
+}
 
+.photo-card p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+</style>
+  <script type="module" src="script.js">
+    // Importa Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+
+// 🔥 Tu configuración de Firebase
 const firebaseConfig = {
-  // 🔹 PEGÁ TU CONFIGURACIÓN ACÁ
+  apiKey: "AIzaSyDD81maTjt_uUtNhOR4mvjhF0_vQYwqeic",
+  authDomain: "phal-88bd8.firebaseapp.com",
+  projectId: "phal-88bd8",
+  storageBucket: "phal-88bd8.firebasestorage.app",
+  messagingSenderId: "542012665295",
+  appId: "1:542012665295:web:811b6ab845a22debea76ba",
+  measurementId: "G-4G3WE7J5J0"
 };
 
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-const form = document.getElementById('uploadForm');
-const gallery = document.getElementById('gallery');
-
-form.addEventListener('submit', async (e) => {
+// 🖼️ Subir foto
+const form = document.getElementById("uploadForm");
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const file = document.getElementById('photo').files[0];
-  const place = document.getElementById('place').value;
-  const date = new Date().toLocaleDateString();
+  const file = document.getElementById("photoInput").files[0];
+  const location = document.getElementById("locationInput").value;
 
-  const storageRef = ref(storage, `fotos/${Date.now()}-${file.name}`);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
+  if (!file) return alert("Seleccioná una foto");
 
-  await addDoc(collection(db, "fotos"), {
-    url,
-    place,
-    date,
-    createdAt: serverTimestamp()
-  });
+  try {
+    // Subir imagen a Storage
+    const fileRef = ref(storage, `fotos/${Date.now()}_${file.name}`);
+    await uploadBytes(fileRef, file);
+    const url = await getDownloadURL(fileRef);
 
-  form.reset();
-  loadGallery();
+    // Guardar datos en Firestore
+    await addDoc(collection(db, "fotos"), {
+      url: url,
+      lugar: location,
+      fecha: serverTimestamp()
+    });
+
+    alert("✅ Foto subida correctamente");
+    form.reset();
+    mostrarFotos();
+  } catch (error) {
+    console.error("Error al subir:", error);
+    alert("❌ Error al subir la foto");
+  }
 });
 
-async function loadGallery() {
+// 📸 Mostrar fotos
+async function mostrarFotos() {
+  const gallery = document.getElementById("gallery");
   gallery.innerHTML = "";
-  const q = query(collection(db, "fotos"), orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach(doc => {
+  const querySnapshot = await getDocs(collection(db, "fotos"));
+  querySnapshot.forEach((doc) => {
     const data = doc.data();
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <img src="${data.url}" alt="">
-      <p>${data.place} - ${data.date}</p>
+    const card = document.createElement("div");
+    card.classList.add("photo-card");
+    card.innerHTML = `
+      <img src="${data.url}" alt="Foto subida">
+      <p><strong>${data.lugar}</strong></p>
+      <p>${data.fecha?.toDate().toLocaleString() ?? "Sin fecha"}</p>
     `;
-    gallery.appendChild(div);
+    gallery.appendChild(card);
   });
 }
 
-loadGallery();
+mostrarFotos();
 
   </script>
 </body>
