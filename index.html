@@ -1,35 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📸 Photo Album — Por cada momento, una foto</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📸 Photo Album</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <div class="ticket">
     <div class="ticket-content">
-      <h1>📸 Photo Album</h1>
-      <p class="subtitle">Por cada momento, una foto</p>
+      <h1>Photo Album</h1>
+      <p class="subtitle">Por cada momento, una foto 💛</p>
 
-      <form id="uploadForm">
-        <label for="photoInput" class="custom-file">
-          📷 Elegí una foto
-          <input type="file" id="photoInput" accept="image/*" required hidden />
-        </label>
-        <input type="text" id="locationInput" placeholder="📍 Lugar" required />
-        <button type="submit">💛 Subir foto</button>
+      <div id="user-info" style="display:none;">
+        <p>👋 Hola, <span id="user-name"></span></p>
+        <button id="logout">Cerrar sesión</button>
+      </div>
+
+      <div id="login-section">
+        <button id="login">Iniciar sesión con Google</button>
+      </div>
+
+      <form id="photoForm" style="display:none;">
+        <input type="file" id="photoInput" accept="image/*">
+        <input type="text" id="locationInput" placeholder="📍 Escribí el lugar">
+        <button type="submit">Subir foto</button>
       </form>
 
       <div id="gallery"></div>
     </div>
   </div>
 
-  <footer>
-    Hecho con 💛 
-  </footer>
-<style>
- body {
+  <footer>Guardá tus momentos con amor 💛</footer>
+ <style>
+   body {
   font-family: "Poppins", sans-serif;
   background: #fff7db;
   margin: 0;
@@ -51,7 +56,6 @@
   position: relative;
 }
 
-/* Bordes decorativos tipo ticket */
 .ticket::before,
 .ticket::after {
   content: "";
@@ -97,40 +101,28 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
+  gap: 1rem;
   margin-bottom: 2rem;
+  padding: 1rem;
 }
 
-.custom-file {
-  background: #e77d00;
-  color: #fff7db;
-  border-radius: 12px;
-  padding: 0.8rem 1.2rem;
-  cursor: pointer;
-  border: none;
-  transition: all 0.3s ease;
-}
-
-.custom-file:hover {
-  background: #cc6f00;
-}
-
-input[type="text"], button {
+input[type="file"], input[type="text"] {
+  width: 90%;
+  max-width: 400px;
   border: 1px solid #e77d00;
-  border-radius: 10px;
-  padding: 0.6rem 1rem;
-  font-size: 1rem;
-  outline: none;
-}
-
-input[type="text"] {
+  border-radius: 12px;
+  padding: 0.8rem;
   background: #fffef7;
   color: #703f00;
+  outline: none;
 }
 
 button {
   background: #e77d00;
   color: #fff7db;
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 1.5rem;
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
@@ -170,14 +162,27 @@ footer {
   color: #a96c00;
 }
 
-</style>
-  <script type="module" src="script.js">
-    // Importa Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+/* 🌸 Adaptación móvil */
+@media (max-width: 600px) {
+  .ticket {
+    padding: 1.2rem;
+    width: 95%;
+  }
+  input[type="file"], input[type="text"] {
+    width: 100%;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+}
 
-// Tu configuración de Firebase
+ </style>
+  <script type="module" src="app.js">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDD81maTjt_uUtNhOR4mvjhF0_vQYwqeic",
   authDomain: "phal-88bd8.firebaseapp.com",
@@ -188,60 +193,78 @@ const firebaseConfig = {
   measurementId: "G-4G3WE7J5J0"
 };
 
-// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const storage = getStorage(app);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-// Subir foto
-const form = document.getElementById("uploadForm");
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+const loginBtn = document.getElementById("login");
+const logoutBtn = document.getElementById("logout");
+const loginSection = document.getElementById("login-section");
+const userInfo = document.getElementById("user-info");
+const userName = document.getElementById("user-name");
+const photoForm = document.getElementById("photoForm");
+const gallery = document.getElementById("gallery");
 
-  const file = document.getElementById("photoInput").files[0];
-  const location = document.getElementById("locationInput").value;
-
-  if (!file) return alert("Seleccioná una foto 💛");
-
-  try {
-    const fileRef = ref(storage, `fotos/${Date.now()}_${file.name}`);
-    await uploadBytes(fileRef, file);
-    const url = await getDownloadURL(fileRef);
-
-    await addDoc(collection(db, "fotos"), {
-      url: url,
-      lugar: location,
-      fecha: serverTimestamp()
-    });
-
-    alert("💛 Foto subida con éxito");
-    form.reset();
-    mostrarFotos();
-  } catch (error) {
-    console.error("Error al subir:", error);
-    alert("❌ Hubo un error al subir la foto");
-  }
+loginBtn.addEventListener("click", async () => {
+  const result = await signInWithPopup(auth, provider);
+  const user = result.user;
+  userInfo.style.display = "block";
+  loginSection.style.display = "none";
+  userName.textContent = user.displayName;
+  photoForm.style.display = "flex";
+  loadPhotos(user.uid);
 });
 
-// Mostrar fotos
-async function mostrarFotos() {
-  const gallery = document.getElementById("gallery");
+logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+  loginSection.style.display = "block";
+  userInfo.style.display = "none";
+  photoForm.style.display = "none";
   gallery.innerHTML = "";
-  const querySnapshot = await getDocs(collection(db, "fotos"));
+});
+
+photoForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const file = document.getElementById("photoInput").files[0];
+  const location = document.getElementById("locationInput").value;
+  const user = auth.currentUser;
+  if (!user || !file) return;
+
+  const fileRef = ref(storage, `${user.uid}/${file.name}`);
+  await uploadBytes(fileRef, file);
+  const url = await getDownloadURL(fileRef);
+
+  const today = new Date().toLocaleDateString();
+
+  await addDoc(collection(db, "photos"), {
+    userId: user.uid,
+    url,
+    location,
+    date: today,
+  });
+
+  document.getElementById("photoForm").reset();
+  loadPhotos(user.uid);
+});
+
+async function loadPhotos(uid) {
+  gallery.innerHTML = "";
+  const q = query(collection(db, "photos"), where("userId", "==", uid), orderBy("date", "desc"));
+  const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     const data = doc.data();
     const card = document.createElement("div");
-    card.classList.add("photo-card");
+    card.className = "photo-card";
     card.innerHTML = `
-      <img src="${data.url}" alt="Foto subida">
-      <p><strong>${data.lugar}</strong></p>
-      <p>${data.fecha?.toDate().toLocaleString() ?? "Sin fecha"}</p>
+      <img src="${data.url}" alt="Foto">
+      <p><b>${data.location}</b></p>
+      <p>${data.date}</p>
     `;
     gallery.appendChild(card);
   });
 }
-
-mostrarFotos();
 
   </script>
 </body>
