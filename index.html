@@ -23,8 +23,12 @@
       </div>
 
       <form id="photoForm" style="display:none;">
+        <label for="photoInput">Elegir foto:</label>
         <input type="file" id="photoInput" accept="image/*">
+
+        <label for="locationInput">Lugar:</label>
         <input type="text" id="locationInput" placeholder="📍 Escribí el lugar">
+
         <button type="submit">Subir foto</button>
       </form>
 
@@ -33,8 +37,8 @@
   </div>
 
   <footer>Guardá tus momentos con amor 💛</footer>
- <style>
-   body {
+<style>
+  body {
   font-family: "Poppins", sans-serif;
   background: #fff7db;
   margin: 0;
@@ -46,37 +50,14 @@
 
 .ticket {
   background: #fff7db;
-  border: 2px dashed #e77d00;
+  border: 3px solid #e77d00;
   border-radius: 20px;
   margin-top: 2rem;
   padding: 2rem;
   width: 90%;
   max-width: 480px;
-  box-shadow: 0 4px 8px rgba(231, 125, 0, 0.2);
+  box-shadow: 0 6px 12px rgba(231, 125, 0, 0.25);
   position: relative;
-}
-
-.ticket::before,
-.ticket::after {
-  content: "";
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: #fff7db;
-  border: 2px solid #e77d00;
-  border-radius: 50%;
-}
-
-.ticket::before {
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.ticket::after {
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .ticket-content {
@@ -86,15 +67,14 @@
 
 h1 {
   color: #e77d00;
-  font-size: 1.8rem;
-  margin-bottom: 0.4rem;
-  letter-spacing: 0.5px;
+  font-size: 2rem;
+  margin-bottom: 0.2rem;
 }
 
 .subtitle {
   color: #a96c00;
+  margin-bottom: 1.6rem;
   font-style: italic;
-  margin-bottom: 1.5rem;
 }
 
 form {
@@ -102,19 +82,34 @@ form {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 1rem;
+  margin: 1rem 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-input[type="file"], input[type="text"] {
-  width: 90%;
-  max-width: 400px;
-  border: 1px solid #e77d00;
+label {
+  color: #a96c00;
+  font-size: 0.9rem;
+  text-align: left;
+  width: 88%;
+}
+
+input[type="file"],
+input[type="text"] {
+  width: 88%;
+  border: 2px solid #e77d00;
   border-radius: 12px;
-  padding: 0.8rem;
+  padding: 0.9rem;
   background: #fffef7;
   color: #703f00;
   outline: none;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+input[type="text"]:focus {
+  border-color: #cc6f00;
+  box-shadow: 0 0 4px #e77d00;
 }
 
 button {
@@ -122,10 +117,11 @@ button {
   color: #fff7db;
   border: none;
   border-radius: 12px;
-  padding: 0.8rem 1.5rem;
+  padding: 1rem 2rem;
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+  width: 88%;
 }
 
 button:hover {
@@ -134,8 +130,9 @@ button:hover {
 
 #gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
+  margin-top: 2rem;
 }
 
 .photo-card {
@@ -143,7 +140,7 @@ button:hover {
   border: 1px solid #f0b86e;
   border-radius: 12px;
   padding: 0.5rem;
-  box-shadow: 0 3px 6px rgba(231, 125, 0, 0.15);
+  box-shadow: 0 4px 6px rgba(231, 125, 0, 0.1);
 }
 
 .photo-card img {
@@ -152,37 +149,49 @@ button:hover {
 }
 
 .photo-card p {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #8b4b00;
+  margin: 0.3rem 0;
 }
 
 footer {
-  margin-top: 1.5rem;
-  font-size: 0.8rem;
+  margin-top: 2rem;
+  font-size: 0.85rem;
   color: #a96c00;
+  text-align: center;
 }
 
-/* 🌸 Adaptación móvil */
+/* 🌸 Versión móvil */
 @media (max-width: 600px) {
   .ticket {
-    padding: 1.2rem;
+    padding: 1.5rem;
     width: 95%;
   }
-  input[type="file"], input[type="text"] {
-    width: 100%;
+
+  input[type="file"],
+  input[type="text"],
+  button {
+    width: 95%;
   }
+
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.7rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
   }
 }
 
- </style>
+</style>
   <script type="module" src="app.js">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    // Importar módulos de Firebase (usando tu SDK online)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
-import { getFirestore, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
+// Tu configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDD81maTjt_uUtNhOR4mvjhF0_vQYwqeic",
   authDomain: "phal-88bd8.firebaseapp.com",
@@ -193,77 +202,132 @@ const firebaseConfig = {
   measurementId: "G-4G3WE7J5J0"
 };
 
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
-const storage = getStorage(app);
-const db = getFirestore(app);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+const db = getFirestore(app);
+const storage = getStorage(app);
 
+// Elementos del DOM
 const loginBtn = document.getElementById("login");
 const logoutBtn = document.getElementById("logout");
-const loginSection = document.getElementById("login-section");
 const userInfo = document.getElementById("user-info");
 const userName = document.getElementById("user-name");
+const loginSection = document.getElementById("login-section");
 const photoForm = document.getElementById("photoForm");
 const gallery = document.getElementById("gallery");
+const photoInput = document.getElementById("photoInput");
+const locationInput = document.getElementById("locationInput");
 
+// 🔹 Iniciar sesión con Google
 loginBtn.addEventListener("click", async () => {
-  const result = await signInWithPopup(auth, provider);
-  const user = result.user;
-  userInfo.style.display = "block";
-  loginSection.style.display = "none";
-  userName.textContent = user.displayName;
-  photoForm.style.display = "flex";
-  loadPhotos(user.uid);
+  const provider = new GoogleAuthProvider();
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (error) {
+    console.error("Error al iniciar sesión:", error);
+  }
 });
 
+// 🔹 Cerrar sesión
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
-  loginSection.style.display = "block";
-  userInfo.style.display = "none";
-  photoForm.style.display = "none";
-  gallery.innerHTML = "";
 });
 
+// 🔹 Detectar usuario activo
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    userInfo.style.display = "block";
+    loginSection.style.display = "none";
+    photoForm.style.display = "flex";
+    userName.textContent = user.displayName || "Usuario";
+    cargarFotos(user.uid);
+  } else {
+    userInfo.style.display = "none";
+    loginSection.style.display = "block";
+    photoForm.style.display = "none";
+    gallery.innerHTML = "";
+  }
+});
+
+// 🔹 Subir foto
 photoForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const file = document.getElementById("photoInput").files[0];
-  const location = document.getElementById("locationInput").value;
+  const file = photoInput.files[0];
+  const location = locationInput.value.trim();
   const user = auth.currentUser;
-  if (!user || !file) return;
 
-  const fileRef = ref(storage, `${user.uid}/${file.name}`);
-  await uploadBytes(fileRef, file);
-  const url = await getDownloadURL(fileRef);
+  if (!user) {
+    alert("Primero iniciá sesión 😊");
+    return;
+  }
+  if (!file || !location) {
+    alert("Completá todos los campos 🧡");
+    return;
+  }
 
-  const today = new Date().toLocaleDateString();
+  try {
+    const fecha = new Date().toLocaleDateString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    });
 
-  await addDoc(collection(db, "photos"), {
-    userId: user.uid,
-    url,
-    location,
-    date: today,
-  });
+    // Subir la imagen a Firebase Storage
+    const fileRef = ref(storage, `fotos/${user.uid}/${Date.now()}_${file.name}`);
+    await uploadBytes(fileRef, file);
+    const imageUrl = await getDownloadURL(fileRef);
 
-  document.getElementById("photoForm").reset();
-  loadPhotos(user.uid);
+    // Guardar datos en Firestore
+    await addDoc(collection(db, "fotos"), {
+      uid: user.uid,
+      nombre: user.displayName,
+      imageUrl,
+      location,
+      fecha
+    });
+
+    // Limpiar formulario
+    photoForm.reset();
+
+    // Volver a cargar las fotos
+    cargarFotos(user.uid);
+  } catch (error) {
+    console.error("Error al subir foto:", error);
+    alert("Error al subir la foto 😢");
+  }
 });
 
-async function loadPhotos(uid) {
-  gallery.innerHTML = "";
-  const q = query(collection(db, "photos"), where("userId", "==", uid), orderBy("date", "desc"));
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    const card = document.createElement("div");
-    card.className = "photo-card";
-    card.innerHTML = `
-      <img src="${data.url}" alt="Foto">
-      <p><b>${data.location}</b></p>
-      <p>${data.date}</p>
-    `;
-    gallery.appendChild(card);
-  });
+// 🔹 Mostrar historial de fotos del usuario
+async function cargarFotos(uid) {
+  gallery.innerHTML = "<p>Cargando tus fotos...</p>";
+  try {
+    const q = query(
+      collection(db, "fotos"),
+      where("uid", "==", uid),
+      orderBy("fecha", "desc")
+    );
+    const querySnapshot = await getDocs(q);
+    gallery.innerHTML = "";
+    if (querySnapshot.empty) {
+      gallery.innerHTML = "<p>No hay fotos todavía 📸</p>";
+    } else {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const photoCard = document.createElement("div");
+        photoCard.className = "photo-card";
+        photoCard.innerHTML = `
+          <img src="${data.imageUrl}" alt="Foto subida">
+          <p><b>${data.location}</b></p>
+          <p>${data.fecha}</p>
+        `;
+        gallery.appendChild(photoCard);
+      });
+    }
+  } catch (error) {
+    console.error("Error al cargar fotos:", error);
+    gallery.innerHTML = "<p>Error al cargar fotos 😢</p>";
+  }
 }
 
   </script>
